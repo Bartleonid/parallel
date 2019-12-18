@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tsung
+  namespace: tsung
+  labels:
+    name: tsung
+spec:
+  template:
+    metadata:
+      labels:
+        name: tsung
+    spec:
+      hostname: tsung
+      containers:
+        - name: tsung
+          image: bartleonid/tsung
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "500m"
+            limits:
+              memory: "64Mi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 80
+          command: ["bash"]
+          args: ["-c", "tsung -f tsung-test.xml start"]
+      restartPolicy: Never
+  backoffLimit: 4
+  parallelism: 2
+  completions: 2
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tsung
+  namespace: tsung
+data:
+  YOUR_ENV_VAR: value
